@@ -117,13 +117,13 @@ function generateFrequencies(initialSyllables, doubleConstants) {
 
 languageFrequencies = {
     rootF: generateFrequencies(4, 0.3),
-    rootN: 150,
+    rootN: 50,
     sufixF: generateFrequencies(1, 0.0),
-    sufixN: 20,
-    nounN: 400,
+    sufixN: 15,
+    nounN: 200,
     articleF: generateFrequencies(1, 0.3),
     articleP: 0.8,
-    articleN: 12
+    articleN: 8
 };
 
 function generateLanguage(freqs) {
