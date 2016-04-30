@@ -1,33 +1,35 @@
 var _ = require('underscore'),
-    letterSeed = {
-      b: 12,
-      c: 15,
-      d: 12,
-      f: 10,
-      g: 10,
-      h: 10,
-      j: 10,
-      k: 6,
-      l: 10,
-      m: 12,
-      n: 12,
-      p: 12,
-      q: 6,
-      r: 10,
-      s: 12,
-      t: 10,
-      v: 10,
-      w: 8,
-      x: 6,
-      y: 10,
-      z: 6
-    },
-    vowelSeed = {
-      a: 10,
-      e: 8,
-      i: 8,
-      o: 10,
-      u: 10
+    alphabet = {
+        letterSeed: {
+            b: 12,
+            c: 15,
+            d: 12,
+            f: 10,
+            g: 10,
+            h: 10,
+            j: 10,
+            k: 6,
+            l: 10,
+            m: 12,
+            n: 12,
+            p: 12,
+            q: 6,
+            r: 10,
+            s: 12,
+            t: 10,
+            v: 10,
+            w: 8,
+            x: 6,
+            y: 10,
+            z: 6
+        },
+        vowelSeed: {
+            a: 10,
+            e: 8,
+            i: 8,
+            o: 10,
+            u: 10
+        }
     };
 
 function generateSyllable(frequencies) {
@@ -69,7 +71,7 @@ function initFrequencies(letterSeed, vowelSeed, syllables, dblCons, dblConsList)
 
 function generateWord(frequencies) {
   var word = '',
-      number = 1 + Math.floor(frequencies.syllables*Math.random());
+      number = 1 + Math.round(frequencies.syllables*Math.random());
   
   for (var i= 0; i < number; i++) {
     word += generateSyllable(frequencies);
@@ -78,23 +80,23 @@ function generateWord(frequencies) {
   return word;
 }
 
-function getRandomLetterSeed() {
+function getRandomLetterSeed(letterSeed) {
   var originalSeed = letterSeed,
       keys = _.keys(originalSeed);
 
   for (var i = 0; i < keys.length; i++) {
-    originalSeed[keys[i]] = Math.floor(originalSeed[keys[i]]*Math.random());
+    originalSeed[keys[i]] = Math.ceil(originalSeed[keys[i]]*Math.random());
   }
 
   return originalSeed;
 }
 
-function getRandomVowelSeed() {
+function getRandomVowelSeed(vowelSeed) {
     var originalSeed = vowelSeed,
         keys = _.keys(originalSeed);
 
     for (var i = 0; i < keys.length; i++) {
-        originalSeed[keys[i]] = Math.floor(originalSeed[keys[i]]*Math.random());
+        originalSeed[keys[i]] = Math.ceil(originalSeed[keys[i]]*Math.random());
     }
 
     return originalSeed;
@@ -105,26 +107,15 @@ function getDoubleConsList() {
   return ['r', 's'];
 }
 
-function generateFrequencies(initialSyllables, doubleConstants) {
-  var lSeed = getRandomLetterSeed(),
-      vSeed = getRandomVowelSeed(),
+function generateFrequencies(alphabet, initialSyllables, doubleConstants) {
+  var lSeed = getRandomLetterSeed(alphabet.letterSeed),
+      vSeed = getRandomVowelSeed(alphabet.vowelSeed),
       syllables = Math.ceil(initialSyllables*Math.random()),
       doubleConsP = doubleConstants*Math.random(),
       doubleConsList = getDoubleConsList();
 
-  return initFrequencies(lSeed, vowelSeed, syllables, doubleConsP, doubleConsList);
+  return initFrequencies(lSeed, vSeed, syllables, doubleConsP, doubleConsList);
 }
-
-languageFrequencies = {
-    rootF: generateFrequencies(4, 0.3),
-    rootN: 50,
-    sufixF: generateFrequencies(1, 0.0),
-    sufixN: 15,
-    nounN: 200,
-    articleF: generateFrequencies(1, 0.3),
-    articleP: 0.8,
-    articleN: 8
-};
 
 function generateLanguage(freqs) {
     var language = {
@@ -172,7 +163,26 @@ function generateSentence(language, n) {
     return text && text[0].toUpperCase() + text.slice(1) + '.';
 }
 
-language = generateLanguage(languageFrequencies);
+function generateLanguageFrequencies(newAlphabet) {
+    return {
+        rootF: generateFrequencies(newAlphabet, 4, 0.3),
+        rootN: 50,
+        sufixF: generateFrequencies(newAlphabet, 1, 0.0),
+        sufixN: 15,
+        nounN: 200,
+        articleF: generateFrequencies(newAlphabet, 1, 0.3),
+        articleP: 0.8,
+        articleN: 8
+    };
+}
+
+exports.defaultAlphabet = alphabet;
+exports.generateLanguage = generateLanguage;
+exports.generateLanguageFrequencies = generateLanguageFrequencies;
+exports.generateSentence = generateSentence;
+
+/*
+language = generateLanguage(generateLanguageFrequencies(alphabet));
 
 console.log('The language: %s', JSON.stringify(language, null, 4));
 
@@ -184,3 +194,4 @@ console.log('A text: %s %s %s %s %s %s',
     generateSentence(language, 8),
     generateSentence(language, 4));
 
+*/
